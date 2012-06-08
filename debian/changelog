@@ -1,5 +1,64 @@
-python-yubico (1.1.0-1) unstable; urgency=low
+python-yubico (1.1.0-1~ppa1~ppadisttarget1) ppadisttarget; urgency=low
 
-  * Initial release. (Closes: #676628)
+  * New upstream release. Adds YubiKey NEO and Nano support.
 
- -- Fredrik Thulin <fredrik@yubico.com>  Fri, 08 Jun 2012 14:45:31 +0200
+ -- Fredrik Thulin <fredrik@yubico.com>  Fri, 08 Jun 2012 13:57:34 +0200
+
+python-yubico (1.0.0-1~ppa2~ppadisttarget1) ppadisttarget; urgency=low
+
+  * Fix build on Lucid by reverting to debhelper compat level 7.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Fri, 16 Dec 2011 07:49:36 +0100
+
+python-yubico (1.0.0-1~ppa1~ppadisttarget1) ppadisttarget; urgency=low
+
+  * New upstream release.
+  * Adds utility yubikey-totp with OATH TOTP capabilities.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Wed, 14 Dec 2011 18:17:48 +0100
+
+python-yubico (0.0.5-1~ppa1~ppadisttarget1) ppadisttarget; urgency=low
+
+  * Made 'import yubico' the only needed import. Check README for proper usage!
+  * Changed Cfg.mode_oath_hotp() keyword from 'bytes' to 'digits'.
+  * Added two more examples.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Mon, 18 Apr 2011 21:45:20 +0200
+
+python-yubico (0.0.4-1~ppa1~ppadisttarget1) ppadisttarget; urgency=low
+
+  * Fix some bugs when raising exceptions.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Mon, 21 Feb 2011 17:59:10 +0100
+
+python-yubico (0.0.3-1~ppa1~ppadisttarget1) ppadisttarget; urgency=low
+
+  * New release identical to 0.0.2, besides actually remembering
+    to increase the version number in Lib/yubico/__init__.py.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Wed, 19 Jan 2011 14:44:28 +0100
+
+python-yubico (0.0.2-1~ppa1~ppadisttarget1) ppadisttarget; urgency=low
+
+  * Make work on Windows (tested with Windows 7 and libusb-1.2.2.0).
+  * Fix some package dependencys.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Tue, 18 Jan 2011 21:30:25 +0100
+
+python-yubico (0.0.1-2~ppa2~ppadisttarget1) ppadisttarget; urgency=low
+
+  * Fix some packaging lints.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Wed, 05 Jan 2011 12:13:29 +0100
+
+python-yubico (0.0.1-2~ppa1~ppadisttarget1) ppadisttarget; urgency=low
+
+  * Fix version and distroserie for Ubuntu PPA.
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Wed, 05 Jan 2011 10:29:45 +0100
+
+python-yubico (0.0.1-1) unstable; urgency=low
+
+  * source package automatically created by stdeb 0.5.1
+
+ -- Fredrik Thulin <fredrik@yubico.com>  Tue, 04 Jan 2011 21:17:39 +0100
