@@ -1,0 +1,310 @@
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* util/yubikey-totp.1: Hyphen fixes.
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* .gitattributes: init
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/__init__.py, setup.py: Prepare version 1.1.0.
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* maintainer-scripts/make-release.sh: init, copy from python-pyhsm
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* COPYING, README: Add 2012 to Copyright years.
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey.py: Remove no-op destructor.
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_neo_usb_hid.py: Add have_nfc_ndef.
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config.py, Lib/yubico/yubikey_config_util.py,
+	Lib/yubico/yubikey_frame.py, Lib/yubico/yubikey_neo_usb_hid.py,
+	Lib/yubico/yubikey_usb_hid.py, doc/ykdef.h,
+	examples/update_cfg_remove_cr: Implement 2.3 functionality.
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_usb_hid.py, examples/yubikey-inventory: Store
+	status information in it's own class.  This breaks backwards compatibility in that it changes the returned
+	result of the 'YK.status()' function.  Old :   flags = YK.status() New :   flags = YK.status().flags Add function YK.status().valid_configs() to see what slots are
+	configured with a valid configuration (requires firmware >= 2.1).
+
+2012-06-08  Fredrik Thulin <fredrik@yubico.com>
+
+	* util/yubikey-totp.1: init
+
+2012-03-27  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config.py, Lib/yubico/yubikey_config_util.py,
+	Lib/yubico/yubikey_usb_hid.py: Fix some bugs my refactoring caused.
+
+2012-03-22  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config.py, Lib/yubico/yubikey_config_util.py,
+	Lib/yubico/yubikey_usb_hid.py: Add checking of YubiKey model to the
+	ticket/config/extended flags.
+
+2012-03-22  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey.py, Lib/yubico/yubikey_config.py,
+	Lib/yubico/yubikey_neo_usb_hid.py, Lib/yubico/yubikey_usb_hid.py,
+	Tests/test_yubikey_config.py, examples/yubikey-inventory: Implement
+	concept of capabilities.  The introduction of the YubiKey NEO BETA using the same USB product
+	id, but only supporting a subset of the functionality of a YubiKey
+	with the same version meant we needed a more powerful way to
+	determine which YubiKey can do what.  With classes deriving from the new YubiKeyCapabilities() this is now
+	possible, and should give us greater flexibility in the future.  Change also adds some other things, such as a separate exception
+	class raised when a YubiKey cannot do what is asked, and
+	model/description data on the YubiKey object classes.
+
+2012-03-22  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config_util.py: Fix __repr__ bug.
+
+2012-03-22  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_usb_hid.py: Fix destructor to not produce
+	warnings.
+
+2012-03-21  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey.py: Detect YubiKey NEO BETA units.
+
+2012-03-21  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_usb_hid.py: Write classname as prefix in
+	_debug.
+
+2012-03-21  Fredrik Thulin <fredrik@yubico.com>
+
+	* examples/yubikey-inventory: Enable debug on -v.
+
+2012-03-21  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_usb_hid.py: write_config: check slot number
+
+2012-03-20  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_neo_usb_hid.py: Implement proper encoding of
+	NDEF text messages.
+
+2012-03-19  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/__init__.py, Lib/yubico/yubikey_neo_usb_hid.py,
+	examples/configure_neo_ndef: Preliminary YubiKey NEO NDEF writing
+	support.
+
+2011-12-14  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/__init__.py, setup.py: Prepare version 1.0.0
+
+2011-12-14  Fredrik Thulin <fredrik@yubico.com>
+
+	* COPYING, Lib/yubico/__init__.py, Lib/yubico/yubico_exception.py,
+	Lib/yubico/yubico_util.py, Lib/yubico/yubikey.py,
+	Lib/yubico/yubikey_config.py, Lib/yubico/yubikey_config_util.py,
+	Lib/yubico/yubikey_defs.py, Lib/yubico/yubikey_frame.py,
+	Lib/yubico/yubikey_usb_hid.py, README,
+	examples/rolling_challenge_response, util/yubikey-totp: Clarify
+	copyright by referencing COPYING file.
+
+2011-12-14  Fredrik Thulin <fredrik@yubico.com>
+
+	* util/yubikey-totp: init, small util to do OATH TOTP using a
+	YubiKey.
+
+2011-12-14  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubico_util.py: Add hotp_truncate().
+
+2011-12-07  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config.py: Add mode_yubikey_otp().
+
+2011-06-07  Fredrik Thulin <fredrik@yubico.com>
+
+	* README: Update PPA name.
+
+2011-04-20  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey.py, Lib/yubico/yubikey_usb_hid.py: small
+	corrections
+
+2011-04-20  Fredrik Thulin <fredrik@yubico.com>
+
+	* Tests/test_yubikey_config.py: Fix test case after change in
+	a24fd7b83.
+
+2011-04-20  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey.py, Lib/yubico/yubikey_usb_hid.py: Add
+	may_block to serial() and challenge_response().
+
+2011-04-20  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config.py: Expect 16 byte key for Yubico-OTP
+	challenge response.  Also rename 'mode' when configuring from 'yubico' to 'OTP' to match
+	the mode used when issuing challenges.
+
+2011-04-20  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_defs.py, Lib/yubico/yubikey_usb_hid.py: Bugfix
+	Yubico OTP challenge-response.
+
+2011-04-20  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey.py, Lib/yubico/yubikey_defs.py,
+	Lib/yubico/yubikey_usb_hid.py: _challenge_response: automatic
+	padding.  Don't require the user of the function to know the details about how
+	the YubiKey expects challenges to be padded.
+
+2011-04-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/__init__.py: Update version to 0.0.5.
+
+2011-04-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* examples/yubikey-inventory: Add another example enumerating
+	YubiKeys.
+
+2011-04-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config.py, Tests/test_yubikey_config.py: Rename
+	mode_oath_hotp keyword 'bytes' to 'digits'.
+
+2011-04-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/__init__.py, Lib/yubico/yubikey.py, README,
+	examples/configure_nist_test_key, examples/nist_challenge_response,
+	examples/rolling_challenge_response: Make 'import yubico' the only
+	needed one.
+
+2011-04-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* doc/ykdef.h: init, from yubikey-personalization 1.5.1
+
+2011-04-13  Fredrik Thulin <fredrik@yubico.com>
+
+	* examples/rolling_challenge_response: Update comment.
+
+2011-04-13  Fredrik Thulin <fredrik@yubico.com>
+
+	* examples/rolling_challenge_response: Example/demo of 'rolling
+	challenges'.  This is a technique that can be used to protect for example an
+	eCryptfs mount passphrase using ever changing challenges to a
+	YubiKey.
+
+2011-04-10  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubico_exception.py: documentation
+
+2011-04-10  Fredrik Thulin <fredrik@yubico.com>
+
+	* README: Updates after feedback from Serge Hallyn.
+
+2011-02-21  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/__init__.py: Version 0.0.4.
+
+2011-02-21  Fredrik Thulin <fredrik@yubico.com>
+
+	* examples/nist_challenge_response: Include C/R operation in
+	try-catch block.
+
+2011-02-19  Stuart Longland <redhatter@gentoo.org>
+
+	* Lib/yubico/yubikey.py: yubico.yubikey: Fix typo in YubiKeyTimeout When a yubikey.YubiKeyTimeout exception is created to be thrown,
+	Python throws a NameError instead because the constructor uses an
+	undefined variable..  The bug can be reproduced by altering the configure_nist_test_key;
+	setting require_button to True in the call to
+	Cfg.mode_challenge_response on line 20, running it and the actual
+	test, then letting the YubiKey time out instead of pressing the
+	button.  The constructor has a parameter, 'value', which was probably
+	intended to be called 'reason' (or the constructor meant to pass
+	'value' instead).  This patch renames the constructor parameter to
+	make it consistent with other modules' usage of the class.
+
+2011-02-19  Stuart Longland <redhatter@gentoo.org>
+
+	* Lib/yubico/yubikey_usb_hid.py: yubico.yubikey_usb_hid: add missing
+	import When a timeout occurs in the method YubiKeyUSBHID._waitfor, instead
+	of throwing the exception, yubikey.YubiKeyTimeout as expected,
+	Python throws a NameError instead because the yubikey module has not
+	been imported (only the YubiKey class).  The bug can be reproduced by altering the configure_nist_test_key;
+	setting require_button to True in the call to
+	Cfg.mode_challenge_response on line 20, running it and the actual
+	test, then letting the YubiKey time out instead of pressing the
+	button.  The alternate fix to this would be to import the YubiKeyTimeout
+	exception class in addition to the YubiKey class.
+
+2011-02-15  Fredrik Thulin <fredrik@yubico.com>
+
+	* README, examples/configure_nist_test_key,
+	examples/nist_challenge_response: Update to match change in
+	yubico_exception.YubicoError.  'value' was changed to 'reason' a while back.
+
+2011-01-19  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/__init__.py: Version 0.0.3.
+
+2011-01-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_usb_hid.py: Fix problem with non-set
+	configuration on Windows.  With libusb-win32 1.2.2.0 on Windows 7, python-yubico would fail
+	with an error message about invalid configuration for the interface
+	being claimed :   usb.USBError: libusb0-dll:err [claim_interface] could not claim                 interface 0, invalid configuration 0 Apparently, the correct thing to do is to set configuration to one
+	that exists on the Yubikey (identified with 'lsusb' or similar).  The only available configuration on my YubiKey is 1.
+
+2011-01-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* Lib/yubico/yubikey_config.py, Tests/test_yubikey_config.py: Fix
+	shadowed test case, and fix bug with OATH-HOTP fixed string being
+	set even if there were no 'omp' or 'tt'.
+
+2011-01-05  Fredrik Thulin <fredrik@yubico.com>
+
+	* README: Add installation instructions.
+
+2011-01-02  Fredrik Thulin <fredrik@yubico.com>
+
+	* .gitignore, COPYING, Lib/yubico/__init__.py,
+	Lib/yubico/yubico_exception.py, Lib/yubico/yubico_util.py,
+	Lib/yubico/yubikey.py, Lib/yubico/yubikey_config.py,
+	Lib/yubico/yubikey_config_util.py, Lib/yubico/yubikey_defs.py,
+	Lib/yubico/yubikey_frame.py, Lib/yubico/yubikey_usb_hid.py, README,
+	Tests/run.sh, Tests/test_yubico.py, Tests/test_yubikey_config.py,
+	Tests/test_yubikey_frame.py, Tests/test_yubikey_usb_hid.py,
+	examples/configure_nist_test_key, examples/nist_challenge_response,
+	setup.py: Create first public version of python-yubico.
+
+2011-01-02  Fredrik Thulin <fredrik@yubico.com>
+
+	* .gitignore, Lib/yubico/__init__.py,
+	Lib/yubico/yubico_exception.py, Lib/yubico/yubico_util.py,
+	Lib/yubico/yubikey.py, Lib/yubico/yubikey_config.py,
+	Lib/yubico/yubikey_config_util.py, Lib/yubico/yubikey_defs.py,
+	Lib/yubico/yubikey_frame.py, Lib/yubico/yubikey_usb_hid.py, README,
+	Tests/run.sh, Tests/test_yubico.py, Tests/test_yubikey_config.py,
+	Tests/test_yubikey_frame.py, Tests/test_yubikey_usb_hid.py,
+	examples/configure_nist_test_key, examples/nist_challenge_response,
+	setup.py: Create first public version of python-yubico.
+
+2010-12-06  Fredrik Thulin <fredrik@yubico.com>
+
+	* README: init
+
+2010-12-06  Fredrik Thulin <ft@it.su.se>
+
+	* init
+
