@@ -1,0 +1,2 @@
+version=3
+http://githubredir.debian.net/github/Yubico/python-yubico /github/Yubico/python-yubico/(.+).tar.gz
