@@ -1,5 +1,5 @@
 Source: python-yubico
-Maintainer: Yubico Developers <yubico-devel@googlegroups.com>
+Maintainer: Yubico Open Source Maintainers <ossmaint@yubico.com>
 Uploaders: Fredrik Thulin <fredrik@yubico.com>, Simon Josefsson <simon@josefsson.org>, Klas Lindfors <klas@yubico.com>
 Section: python
 Priority: optional
