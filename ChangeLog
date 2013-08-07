@@ -1,3 +1,56 @@
+2013-08-07  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2013-08-07  Dain Nilsson <dain@yubico.com>
+
+	* Lib/yubico/__init__.py, Lib/yubico/yubico_exception.py,
+	Lib/yubico/yubico_util.py, Lib/yubico/yubikey.py,
+	Lib/yubico/yubikey_config.py, Lib/yubico/yubikey_config_util.py,
+	Lib/yubico/yubikey_defs.py, Lib/yubico/yubikey_frame.py,
+	Lib/yubico/yubikey_neo_usb_hid.py, Lib/yubico/yubikey_usb_hid.py,
+	NEWS, setup.py, util/yubikey-totp, yubico/__init__.py,
+	yubico/yubico_exception.py, yubico/yubico_util.py,
+	yubico/yubikey.py, yubico/yubikey_config.py,
+	yubico/yubikey_config_util.py, yubico/yubikey_defs.py,
+	yubico/yubikey_frame.py, yubico/yubikey_neo_usb_hid.py,
+	yubico/yubikey_usb_hid.py: Moved modules from Lib/ to root.
+
+2013-08-05  Dain Nilsson <dain@yubico.com>
+
+	* .gitignore, Lib/yubico/__init__.py, MANIFEST.in, NEWS,
+	Tests/run.sh, Tests/test_yubico.py, Tests/test_yubikey_config.py,
+	Tests/test_yubikey_frame.py, Tests/test_yubikey_usb_hid.py,
+	maintainer-scripts/make-release.sh, release.py, setup.cfg,
+	setup.py, test/run.sh, test/test_yubico.py,
+	test/test_yubikey_config.py, test/test_yubikey_frame.py,
+	test/test_yubikey_usb_hid.py: Use python setup.py for testing and
+	releasing.
+
+2013-03-25  Klas Lindfors <klas@yubico.com>
+
+	* : commit bd90abb268733d322586a0de2c2eed1376600ab9 Author: Klas
+	Lindfors <klas@yubico.com> Date:   Mon Mar 11 15:10:38 2013 +0100
+
+2013-03-01  Klas Lindfors <klas@yubico.com>
+
+	* Lib/yubico/yubikey_usb_hid.py: add support for yubikey NEO pids
+
+2012-12-04  Myroslav Opyr <myroslav@quintagroup.com>
+
+	* examples/yubikey-inventory: Handling 255 yubikeys Hypothetically you can return None in case all of the 255
+	find_yubikey() invocations return an instance...
+
+2012-08-30  Fredrik Thulin <fredrik@yubico.com>
+
+	* : commit f76b63265755cfd69720e332912cf433adabb379 Merge: ddddefc
+	e324860 Author: Fredrik Thulin <f-github@spam.thulin.net> Date:
+	Thu Aug 30 00:09:16 2012 -0700
+
+2012-08-28  Paul McMillan <Paul@McMillan.ws>
+
+	* examples/rolling_challenge_response: fix spelling in comment
+
 2012-06-08  Fredrik Thulin <fredrik@yubico.com>
 
 	* util/yubikey-totp.1: Hyphen fixes.
@@ -42,7 +95,8 @@
 
 2012-06-08  Fredrik Thulin <fredrik@yubico.com>
 
-	* util/yubikey-totp.1: init
+	* : commit 697199fa8da433a381f34fa9b0cc74e6c709375e Author: Fredrik
+	Thulin <fredrik@yubico.com> Date:   Fri Jun 8 10:16:10 2012 +0200
 
 2012-03-27  Fredrik Thulin <fredrik@yubico.com>
 
@@ -257,6 +311,12 @@
 2011-01-19  Fredrik Thulin <fredrik@yubico.com>
 
 	* Lib/yubico/__init__.py: Version 0.0.3.
+
+2011-01-18  Fredrik Thulin <fredrik@yubico.com>
+
+	* : commit f2ef95e6f9082a06becef7ebba8d671e722c22d9 Merge: db7762f
+	d7b90e9 Author: Fredrik Thulin <fredrik@yubico.com> Date:   Tue Jan
+	18 21:03:58 2011 +0100
 
 2011-01-18  Fredrik Thulin <fredrik@yubico.com>
 
