@@ -1,17 +1,16 @@
 Source: python-yubico
 Maintainer: Yubico Open Source Maintainers <ossmaint@yubico.com>
-Uploaders: Fredrik Thulin <fredrik@yubico.com>, Simon Josefsson <simon@josefsson.org>, Klas Lindfors <klas@yubico.com>
+Uploaders: Fredrik Thulin <fredrik@yubico.com>, Simon Josefsson <simon@josefsson.org>, Klas Lindfors <klas@yubico.com>, Dain Nilsson <dain@yubico.com>
 Section: python
 Priority: optional
 Build-Depends: debhelper (>= 7.0.50~),
-	       python-support (>= 0.8.4),
+	       python-all (>= 2.6.6-3),
 	       python-nose (>= 0.10.0b1),
 	       python-setuptools (>= 0.6b3)
 Vcs-Git: git://github.com/Yubico/python-yubico-dpkg.git
 Vcs-Browser: https://github.com/Yubico/python-yubico-dpkg
 Homepage: https://github.com/Yubico/python-yubico
-Standards-Version: 3.9.3
-DM-Upload-Allowed: yes
+Standards-Version: 3.9.4
 
 Package: python-yubico
 Architecture: all
