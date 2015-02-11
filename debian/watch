@@ -1,2 +1,3 @@
 version=3
-http://githubredir.debian.net/github/Yubico/python-yubico /github/Yubico/python-yubico/(.+).tar.gz
+opts=pgpsigurlmangle=s/$/.sig/ \
+  https://developers.yubico.com/python-yubico/Releases/ python-yubico-(\d[\d.]*)\.tar\.gz
