@@ -1,3 +1,50 @@
+2015-02-11  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS for release.
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* setup.py, yubico/__init__.py: Read version from yubico/__init__.py
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS.
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* setup.py: Bumped version number.
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* .gitignore: Updated .gitignore.
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* test/test_yubikey_usb_hid.py: Release YK in tearDown.
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* README, README.adoc: Reformatted README to Asciidoc and added
+	README.adoc symlink for Github (fixed #11).
+
+2015-02-10  Dain Nilsson <dain@yubico.com>
+
+	* test/run.sh: Remove test/run.sh, test with "python setup.py test"
+	instead.
+
+2015-02-09  Dain Nilsson <dain@yubico.com>
+
+	* .gitignore: Updated .gitignore.
+
+2014-06-24  Dain Nilsson <dain@yubico.com>
+
+	* setup.py: Only require nose for tests (fixes #12).
+
+2014-01-23  Dain Nilsson <dain@yubico.com>
+
+	* util/yubikey-totp: Corrected timestamp used by yubikey-totp (fixes
+	#6).
+
 2013-09-05  Dain Nilsson <dain@yubico.com>
 
 	* NEWS, setup.py: Prepare for 1.2.1 release.
