@@ -1,3 +1,9 @@
+python-yubico (1.2.2-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Dain Nilsson <dain@yubico.com>  Wed, 11 Feb 2015 11:24:42 +0100
+
 python-yubico (1.2.0-1) unstable; urgency=low
 
   * Re-packaged for easy PyPI releasing.
