@@ -1,3 +1,33 @@
+2015-03-23  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, yubico/__init__.py: Updated version.
+
+2015-03-23  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_usb_hid.py: Added PIDs and ignore failure to
+	setConfiguration.
+
+2015-02-24  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* README: Update README
+
+2015-02-24  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* README: Updated link to PyUSB. Closes #16
+
+2015-02-24  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* : Merge pull request #15 from vladimir-v-diaz/patch-2 Update README
+
+2015-02-23  Vladimir Diaz <vladimir.v.diaz@gmail.com>
+
+	* README: Update README Provide pip installation instructions for `pyusb`
+
+2015-02-19  Vladimir Diaz <vladimir.v.diaz@gmail.com>
+
+	* README: Update README Specify the correct package in the `pip install` installation
+	instruction.
+
 2015-02-11  Dain Nilsson <dain@yubico.com>
 
 	* NEWS: Updated NEWS for release.
