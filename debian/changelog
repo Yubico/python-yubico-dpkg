@@ -10,6 +10,7 @@ python-yubico (1.2.3-1) unstable; urgency=medium
   * Drop Fredrik as uploader.
   * Bump compat to 9.
   * Drop invalid Upstream-Contact email.
+  * Simplify README.source.
 
  -- Dain Nilsson <dain@yubico.com>  Mon, 23 Mar 2015 14:02:57 +0100
 
