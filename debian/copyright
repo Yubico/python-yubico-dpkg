@@ -1,6 +1,5 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: python-yubico
-Upstream-Contact: ossmaint@yubico.com
 Source: https://developers.yubico.com/python-yubico/
 
 Files: *

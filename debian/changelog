@@ -2,25 +2,16 @@ python-yubico (1.2.3-1) unstable; urgency=medium
 
   [ Dain Nilsson ]
   * New upstream version.
+  * Re-packaged for easy PyPI releasing.
 
   [ Simon Josefsson ]
+  * Acknowledge NMU.
   * Change maintainer field to match other Yubico packages.
   * Drop Fredrik as uploader.
   * Bump compat to 9.
+  * Drop invalid Upstream-Contact email.
 
  -- Dain Nilsson <dain@yubico.com>  Mon, 23 Mar 2015 14:02:57 +0100
-
-python-yubico (1.2.2-1) unstable; urgency=low
-
-  * New upstream version.
-
- -- Dain Nilsson <dain@yubico.com>  Wed, 11 Feb 2015 11:24:42 +0100
-
-python-yubico (1.2.0-1) unstable; urgency=low
-
-  * Re-packaged for easy PyPI releasing.
-
- -- Dain Nilsson <dain@yubico.com>  Wed, 07 Aug 2013 13:27:28 +0200
 
 python-yubico (1.1.0-2.1) unstable; urgency=medium
 
