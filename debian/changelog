@@ -12,7 +12,7 @@ python-yubico (1.2.3-1) unstable; urgency=medium
   * Drop invalid Upstream-Contact email.
   * Simplify README.source.
 
- -- Dain Nilsson <dain@yubico.com>  Mon, 23 Mar 2015 14:02:57 +0100
+ -- Dain Nilsson <dain@yubico.com>  Mon, 24 Aug 2015 21:25:48 +0200
 
 python-yubico (1.1.0-2.1) unstable; urgency=medium
 
