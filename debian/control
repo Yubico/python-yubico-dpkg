@@ -1,9 +1,10 @@
 Source: python-yubico
-Maintainer: Yubico Open Source Maintainers <ossmaint@yubico.com>
-Uploaders: Fredrik Thulin <fredrik@yubico.com>, Simon Josefsson <simon@josefsson.org>, Klas Lindfors <klas@yubico.com>, Dain Nilsson <dain@yubico.com>
+Maintainer: Debian Authentication Maintainers <pkg-auth-maintainers@lists.alioth.debian.org>
+Uploaders: Simon Josefsson <simon@josefsson.org>, Klas Lindfors <klas@yubico.com>, Dain Nilsson <dain@yubico.com>
 Section: python
 Priority: optional
-Build-Depends: debhelper (>= 7.0.50~),
+Build-Depends: debhelper (>= 9),
+	       dh-python,
 	       python-all (>= 2.6.6-3),
 	       python-nose (>= 0.10.0b1),
 	       python-setuptools (>= 0.6b3)

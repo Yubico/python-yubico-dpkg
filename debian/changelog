@@ -1,6 +1,12 @@
 python-yubico (1.2.3-1) unstable; urgency=medium
 
+  [ Dain Nilsson ]
   * New upstream version.
+
+  [ Simon Josefsson ]
+  * Change maintainer field to match other Yubico packages.
+  * Drop Fredrik as uploader.
+  * Bump compat to 9.
 
  -- Dain Nilsson <dain@yubico.com>  Mon, 23 Mar 2015 14:02:57 +0100
 
@@ -15,6 +21,14 @@ python-yubico (1.2.0-1) unstable; urgency=low
   * Re-packaged for easy PyPI releasing.
 
  -- Dain Nilsson <dain@yubico.com>  Wed, 07 Aug 2013 13:27:28 +0200
+
+python-yubico (1.1.0-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Convert from dh_pysupport to dh_python2 (Closes: #786162)
+    - replace python-support with dh-python and python-all in Build-Depends
+
+ -- Andrey Rahmatullin <wrar@debian.org>  Thu, 20 Aug 2015 00:50:43 +0500
 
 python-yubico (1.1.0-2) unstable; urgency=low
 
