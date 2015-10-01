@@ -1,5 +1,27 @@
 2015-10-01  Dain Nilsson <dain@yubico.com>
 
+	* NEWS, yubico/yubico_version.py: Update version and NEWS for
+	release.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, yubico/yubico_version.py: Bump version.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* setup.py: Fix setup.py.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in: Revert "Remove release.py from MANIFEST." This reverts commit 1fbef1fae87d97a8f61a2e5a042200e82f5db764.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* .gitmodules, README, release.py, setup.py, vendor/yubicommon,
+	yubico/yubicommon: Revert "Use python-yubicommon" This reverts commit 920d43d3c1ad3ee72e094c214801cbb44691e9ac.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
 	* NEWS, yubico/yubico_version.py: Updated NEWS and version for
 	release.
 

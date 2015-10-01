@@ -3,6 +3,7 @@ ChangeLog
 MANIFEST.in
 NEWS
 README
+release.py
 setup.cfg
 setup.py
 doc/ykdef.h
@@ -34,7 +35,3 @@ yubico/yubikey_defs.py
 yubico/yubikey_frame.py
 yubico/yubikey_neo_usb_hid.py
 yubico/yubikey_usb_hid.py
-yubico/yubicommon/setup/__init__.py
-yubico/yubicommon/setup/exe.py
-yubico/yubicommon/setup/pyinstaller_spec.py
-yubico/yubicommon/setup/qt.py
