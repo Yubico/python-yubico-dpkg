@@ -1,9 +1,9 @@
-python-yubico (1.3.0-1) unstable; urgency=medium
+python-yubico (1.3.1-1) unstable; urgency=medium
 
   [ Dain Nilsson ]
   * New upstream version.
 
- -- Dain Nilsson <dain@yubico.com>  Thu, 01 Oct 2015 15:37:34 +0200
+ -- Dain Nilsson <dain@yubico.com>  Thu, 01 Oct 2015 16:03:57 +0200
 
 python-yubico (1.2.3-1) unstable; urgency=medium
 
