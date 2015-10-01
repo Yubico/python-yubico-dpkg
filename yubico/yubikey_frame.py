@@ -13,11 +13,12 @@ __all__ = [
 
 import struct
 
-import yubico_util
-import yubikey_defs
-import yubico_exception
-import yubikey_config
-from yubico import __version__
+from . import yubico_util
+from . import yubikey_defs
+from . import yubico_exception
+from .yubico_version import __version__
+
+from .yubikey_defs import SLOT
 
 class YubiKeyFrame:
     """
@@ -29,11 +30,13 @@ class YubiKeyFrame:
     flags.
     """
 
-    def __init__(self, command, payload=''):
-        if payload is '':
-            payload = '\x00' * 64
+    def __init__(self, command, payload=b''):
+        if not payload:
+            payload = b'\x00' * 64
         if len(payload) != 64:
             raise yubico_exception.InputError('payload must be empty or 64 bytes')
+        if not isinstance(payload, bytes):
+            raise yubico_exception.InputError('payload must be a bytestring')
         self.payload = payload
         self.command = command
         self.crc = yubico_util.crc16(payload)
@@ -60,7 +63,7 @@ class YubiKeyFrame:
         #     unsigned short crc;
         #     unsigned char filler[3];
         # } YKFRAME;
-        filler = ''
+        filler = b''
         return struct.pack('<64sBH3s',
                            self.payload, self.command, self.crc, filler)
 
@@ -78,11 +81,11 @@ class YubiKeyFrame:
             this, rest = rest[:7], rest[7:]
             if seq > 0 and rest:
                 # never skip first or last serie
-                if this != '\x00\x00\x00\x00\x00\x00\x00':
-                    this += chr(yubikey_defs.SLOT_WRITE_FLAG + seq)
+                if this != b'\x00\x00\x00\x00\x00\x00\x00':
+                    this += yubico_util.chr_byte(yubikey_defs.SLOT_WRITE_FLAG + seq)
                     out.append(self._debug_string(debug, this))
             else:
-                this += chr(yubikey_defs.SLOT_WRITE_FLAG + seq)
+                this += yubico_util.chr_byte(yubikey_defs.SLOT_WRITE_FLAG + seq)
                 out.append(self._debug_string(debug, this))
             seq += 1
         return out
@@ -93,31 +96,32 @@ class YubiKeyFrame:
         """
         if not debug:
             return data
-        if self.command in [yubikey_config.SLOT_CONFIG,
-                            yubikey_config.SLOT_CONFIG2,
-                            yubikey_config.SLOT_UPDATE1,
-                            yubikey_config.SLOT_UPDATE2,
-                            yubikey_config.SLOT_SWAP,
-                            ]:
-            # annotate according to config_st (see yubikey_config.to_string())
-            if ord(data[-1]) == 0x80:
+        if self.command in [
+            SLOT.CONFIG,
+            SLOT.CONFIG2,
+            SLOT.UPDATE1,
+            SLOT.UPDATE2,
+            SLOT.SWAP,
+        ]:
+            # annotate according to config_st (see yubikey_defs.to_string())
+            if yubico_util.ord_byte(data[-1]) == 0x80:
                 return (data, "FFFFFFF")
-            if ord(data[-1]) == 0x81:
+            if yubico_util.ord_byte(data[-1]) == 0x81:
                 return (data, "FFFFFFF")
-            if ord(data[-1]) == 0x82:
+            if yubico_util.ord_byte(data[-1]) == 0x82:
                 return (data, "FFUUUUU")
-            if ord(data[-1]) == 0x83:
+            if yubico_util.ord_byte(data[-1]) == 0x83:
                 return (data, "UKKKKKK")
-            if ord(data[-1]) == 0x84:
+            if yubico_util.ord_byte(data[-1]) == 0x84:
                 return (data, "KKKKKKK")
-            if ord(data[-1]) == 0x85:
+            if yubico_util.ord_byte(data[-1]) == 0x85:
                 return (data, "KKKAAAA")
-            if ord(data[-1]) == 0x86:
+            if yubico_util.ord_byte(data[-1]) == 0x86:
                 return (data, "AAlETCr")
-            if ord(data[-1]) == 0x87:
+            if yubico_util.ord_byte(data[-1]) == 0x87:
                 return (data, "rCR")
             # after payload
-            if ord(data[-1]) == 0x89:
+            if yubico_util.ord_byte(data[-1]) == 0x89:
                 return (data, " Scr")
         else:
             return (data, '')

@@ -1,3 +1,178 @@
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, yubico/yubico_version.py: Updated NEWS and version for
+	release.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* .travis.yml: Use Travis container based infrastructure.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in: Remove release.py from MANIFEST.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* .gitmodules, README, release.py, setup.py, vendor/yubicommon,
+	yubico/yubicommon: Use python-yubicommon
+
+2015-09-30  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_usb_hid.py: Correctly handle cases where
+	programming counter shouldn't increase.
+
+2015-09-14  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_neo_usb_hid.py: Add missing import.
+
+2015-09-10  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_neo_usb_hid.py: Fix write commands for YubiKey NEO.
+
+2015-09-09  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_defs.py: Don't use set literals (not available in
+	python <2.7)
+
+2015-09-09  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_4_usb_hid.py, yubico/yubikey_config.py,
+	yubico/yubikey_defs.py, yubico/yubikey_usb_hid.py: Moved some stuff
+	around.
+
+2015-09-09  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_config_util.py: Made flags work with YK4.
+
+2015-09-09  Dain Nilsson <dain@yubico.com>
+
+	* yubico/ykdef.py, yubico/yubikey_4_usb_hid.py,
+	yubico/yubikey_config.py, yubico/yubikey_defs.py,
+	yubico/yubikey_frame.py, yubico/yubikey_neo_usb_hid.py,
+	yubico/yubikey_usb_hid.py: Combined ykdef with yubikey_defs.
+
+2015-09-09  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey.py, yubico/yubikey_4_usb_hid.py: Added support for
+	YK4-based devices.
+
+2015-09-09  Dain Nilsson <dain@yubico.com>
+
+	* yubico/ykdef.py, yubico/yubico_util.py, yubico/yubikey_base.py,
+	yubico/yubikey_neo_usb_hid.py, yubico/yubikey_usb_hid.py: Moved
+	constants to yubico/ykdef.py
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* README: Updated README.
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* NEWS: Updated NEWS.
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_neo_usb_hid.py: Added scancode programming for NEO.
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_config.py: Added zapping of slots.
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_base.py, yubico/yubikey_neo_usb_hid.py: Added
+	have_scanmap and have_usb_mode.
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_base.py, yubico/yubikey_neo_usb_hid.py: Added
+	support for programming NDEF slot 2 (fixes #23)
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_usb_hid.py: Sleep before read (closes #18)
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubico_exception.py, yubico/yubikey_base.py,
+	yubico/yubikey_config.py, yubico/yubikey_config_util.py,
+	yubico/yubikey_neo_usb_hid.py, yubico/yubikey_usb_hid.py: Switch to
+	new-style classes.
+
+2015-09-08  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubico_version.py, yubico/yubikey.py,
+	yubico/yubikey_base.py, yubico/yubikey_neo_usb_hid.py,
+	yubico/yubikey_usb_hid.py: Improved support for YubiKey NEO.
+
+2015-08-26  Dain Nilsson <dain@yubico.com>
+
+	* .travis.yml: Fixed test command in travis.
+
+2015-08-26  Dain Nilsson <dain@yubico.com>
+
+	* .travis.yml, setup.py, test/__init__.py, test/soft/__init__.py,
+	test/soft/test_yubico.py, test/soft/test_yubikey_config.py,
+	test/soft/test_yubikey_frame.py, test/test_yubico.py,
+	test/test_yubikey_config.py, test/test_yubikey_frame.py,
+	test/test_yubikey_usb_hid.py, test/usb/__init__.py,
+	test/usb/test_yubikey_usb_hid.py: Separated tests that require a
+	YubiKey from those that do not.
+
+2015-07-20  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* : Merge pull request #25 from Yubico/travis Added Travis CI support
+
+2015-07-20  Henrik Stråth <minisu@users.noreply.github.com>
+
+	* : Merge pull request #24 from encukou/py3 Add Python3 compatibility to util and examples
+
+2015-07-03  Dain Nilsson <dainzor@gmail.com>
+
+	* : Merge pull request #20 from encukou/py3 Add support for Python 3
+
+2015-07-01  Petr Viktorin <pviktori@redhat.com>
+
+	* test/test_yubico.py, test/test_yubikey_config.py,
+	test/test_yubikey_frame.py, test/test_yubikey_usb_hid.py,
+	yubico/yubico_util.py, yubico/yubikey_config.py,
+	yubico/yubikey_frame.py, yubico/yubikey_neo_usb_hid.py,
+	yubico/yubikey_usb_hid.py: Distinguish text strings and bytestrings
+	for Python 3 compatibility All (potentially binary) data is bytestrings; text (including e.g.
+	hexdumps and exception messages) is text strings.  Note that in Python 2, there's no difference between text (str,
+	'...') and bytestrings (bytes, b'...').
+
+2015-07-01  Petr Viktorin <pviktori@redhat.com>
+
+	* test/test_yubikey_config.py, test/test_yubikey_frame.py,
+	test/test_yubikey_usb_hid.py, yubico/__init__.py,
+	yubico/yubico_exception.py, yubico/yubico_util.py,
+	yubico/yubikey.py, yubico/yubikey_base.py,
+	yubico/yubikey_config.py, yubico/yubikey_defs.py,
+	yubico/yubikey_frame.py, yubico/yubikey_neo_usb_hid.py,
+	yubico/yubikey_usb_hid.py: Use Python 3-compatible syntax - Use parentheses with print   (python-yubico only ever gives one argument to print) - Use 'as' syntax when catching expressions (PEP; Python 2.6+) - Use explicit relative imports (PEP 328; Python 2.4+) - Use range instead of xrange   (this is in a debugging tool, the memory overhead is negligible,   and the entire result is iterated over)
+
+2015-07-01  Petr Viktorin <pviktori@redhat.com>
+
+	* yubico/yubikey.py, yubico/yubikey_base.py,
+	yubico/yubikey_config.py, yubico/yubikey_usb_hid.py: Breaking
+	circular imports: Move base classes to yubico_base.py This breaks the yubikey <-> yubikey_usb_hid circular import
+
+2015-07-01  Petr Viktorin <pviktori@redhat.com>
+
+	* yubico/yubikey_config.py, yubico/yubikey_defs.py,
+	yubico/yubikey_frame.py, yubico/yubikey_usb_hid.py: Breaking
+	circular imports: Move command definitions to yubikey_defs This breaks the yubikey_config <-> yubikey_frame circular import.
+
+2015-07-01  Petr Viktorin <pviktori@redhat.com>
+
+	* setup.py, yubico/__init__.py, yubico/yubico_exception.py,
+	yubico/yubico_util.py, yubico/yubico_version.py, yubico/yubikey.py,
+	yubico/yubikey_config.py, yubico/yubikey_defs.py,
+	yubico/yubikey_frame.py, yubico/yubikey_neo_usb_hid.py,
+	yubico/yubikey_usb_hid.py: Breaking circular imports: Move
+	__version__ to a dedicated module
+
 2015-03-23  Dain Nilsson <dain@yubico.com>
 
 	* NEWS, yubico/__init__.py: Updated version.

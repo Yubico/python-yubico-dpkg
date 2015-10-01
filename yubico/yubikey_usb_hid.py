@@ -14,15 +14,16 @@ __all__ = [
   'YubiKeyUSBHIDStatus',
 ]
 
-from yubico import __version__
+from .yubico_version import __version__
 
-import yubico_util
-import yubico_exception
-import yubikey_frame
-import yubikey_config
-import yubikey_defs
-import yubikey
-from yubikey import YubiKey
+from . import yubico_util
+from . import yubico_exception
+from . import yubikey_frame
+from . import yubikey_config
+from . import yubikey_defs
+from . import yubikey_base
+from .yubikey_defs import SLOT, YUBICO_VID, PID
+from .yubikey_base import YubiKey
 import struct
 import time
 import sys
@@ -42,50 +43,17 @@ _USB_TIMEOUT_MS         = 2000
 # from ykcore_backend.h
 _FEATURE_RPT_SIZE       = 8
 _REPORT_TYPE_FEATURE    = 0x03
-# from ykdef.h
-_YUBICO_VID             = 0x1050
-_YUBIKEY_PID            = 0x0010
-_NEO_OTP_PID            = 0x0110
-_NEO_OTP_CCID_PID       = 0x0111
-_NEO_OTP_U2F_PID        = 0x0114
-_NEO_OTP_U2F_CCID_PID   = 0x0116
-
-_YK4_OTP_PID            = 0x0401
-_YK4_OTP_U2F_PID        = 0x0403
-_YK4_OTP_CCID_PID       = 0x0405
-_YK4_OTP_U2F_CCID_PID   = 0x0407
-
-_PLUS_U2F_OTP_PID       = 0x0410
-
-_YK_PIDS = [
-    _YUBIKEY_PID,
-    _NEO_OTP_PID,
-    _NEO_OTP_CCID_PID,
-    _NEO_OTP_U2F_PID,
-    _NEO_OTP_U2F_CCID_PID,
-    _YK4_OTP_PID,
-    _YK4_OTP_U2F_PID,
-    _YK4_OTP_CCID_PID,
-    _YK4_OTP_U2F_CCID_PID,
-    _PLUS_U2F_OTP_PID
-]
-
-# commands from ykdef.h
-_SLOT_DEVICE_SERIAL    = 0x10 # Device serial number
-_SLOT_CHAL_OTP1        = 0x20 # Write 6 byte challenge to slot 1, get Yubico OTP response
-_SLOT_CHAL_OTP2        = 0x28 # Write 6 byte challenge to slot 2, get Yubico OTP response
-_SLOT_CHAL_HMAC1       = 0x30 # Write 64 byte challenge to slot 1, get HMAC-SHA1 response
-_SLOT_CHAL_HMAC2       = 0x38 # Write 64 byte challenge to slot 2, get HMAC-SHA1 response
 
 # dict used to select command for mode+slot in _challenge_response
-_CMD_CHALLENGE = {'HMAC': {1: _SLOT_CHAL_HMAC1, 2: _SLOT_CHAL_HMAC2},
-                  'OTP': {1: _SLOT_CHAL_OTP1, 2: _SLOT_CHAL_OTP2},
+_CMD_CHALLENGE = {'HMAC': {1: SLOT.CHAL_HMAC1, 2: SLOT.CHAL_HMAC2},
+                  'OTP': {1: SLOT.CHAL_OTP1, 2: SLOT.CHAL_OTP2},
                   }
 
 class YubiKeyUSBHIDError(yubico_exception.YubicoError):
     """ Exception raised for errors with the USB HID communication. """
 
-class YubiKeyUSBHIDCapabilities(yubikey.YubiKeyCapabilities):
+
+class YubiKeyUSBHIDCapabilities(yubikey_base.YubiKeyCapabilities):
     """
     Capture the capabilities of the various versions of YubiKeys.
 
@@ -93,9 +61,10 @@ class YubiKeyUSBHIDCapabilities(yubikey.YubiKeyCapabilities):
     in one or more versions, leaving the other ones at False through default_answer.
     """
     def __init__(self, model, version, default_answer):
-        yubikey.YubiKeyCapabilities.__init__(self, model = model, \
-                                                 version = version, \
-                                                 default_answer = default_answer)
+        super(YubiKeyUSBHIDCapabilities, self).__init__(
+            model=model,
+            version=version,
+            default_answer=default_answer)
 
     def have_yubico_OTP(self):
         """ Yubico OTP support has always been available in the standard YubiKey. """
@@ -135,22 +104,11 @@ class YubiKeyUSBHIDCapabilities(yubikey.YubiKeyCapabilities):
     def have_configuration_slot(self, slot):
         return (slot in [1, 2])
 
-class YubiKeyUSBHID(YubiKey):
+
+class YubiKeyHIDDevice(object):
     """
-    Class for accessing a YubiKey over USB HID.
-
-    This class is for communicating specifically with standard YubiKeys
-    (USB vendor id = 0x1050, product id = 0x10) using USB HID.
-
-    There is another class for the YubiKey NEO BETA, even though that
-    product also goes by product id 0x10 for the BETA versions. The
-    expectation is that the final YubiKey NEO will have it's own product id.
-
-    Tested with YubiKey versions 1.3 and 2.2.
+    High-level wrapper for low-level HID commands for a HID based YubiKey.
     """
-
-    model = 'YubiKey'
-    description = 'YubiKey (or YubiKey NANO)'
 
     def __init__(self, debug=False, skip=0):
         """
@@ -160,29 +118,11 @@ class YubiKeyUSBHID(YubiKey):
             skip  -- number of YubiKeys to skip
             debug -- True or False
         """
-        YubiKey.__init__(self, debug)
+        self.debug = debug
         self._usb_handle = None
         if not self._open(skip):
             raise YubiKeyUSBHIDError('YubiKey USB HID initialization failed')
         self.status()
-        self.capabilities = \
-            YubiKeyUSBHIDCapabilities(model = self.model, \
-                                          version = self.version_num(), \
-                                          default_answer = False)
-
-    def __del__(self):
-        try:
-            if self._usb_handle:
-                self._close()
-        except IOError:
-            pass
-
-    def __repr__(self):
-        return '<%s instance at %s: YubiKey version %s>' % (
-            self.__class__.__name__,
-            hex(id(self)),
-            self.version()
-            )
 
     def status(self):
         """
@@ -192,88 +132,12 @@ class YubiKeyUSBHID(YubiKey):
         self._status = YubiKeyUSBHIDStatus(data)
         return self._status
 
-    def version_num(self):
-        """ Get the YubiKey version as a tuple (major, minor, build). """
-        return self._status.ykver()
-
-    def version(self):
-        """ Get the YubiKey version. """
-        return self._status.version()
-
-    def serial(self, may_block=True):
-        """ Get the YubiKey serial number (requires YubiKey 2.2). """
-        if not self.capabilities.have_serial_number():
-            raise yubikey.YubiKeyVersionError("Serial number unsupported in YubiKey %s" % self.version() )
-        return self._read_serial(may_block)
-
-    def challenge_response(self, challenge, mode='HMAC', slot=1, variable=True, may_block=True):
-        """ Issue a challenge to the YubiKey and return the response (requires YubiKey 2.2). """
-        if not self.capabilities.have_challenge_response(mode):
-            raise yubikey.YubiKeyVersionError("%s challenge-response unsupported in YubiKey %s" % (mode, self.version()) )
-        return self._challenge_response(challenge, mode, slot, variable, may_block)
-
-    def init_config(self, **kw):
-        """ Get a configuration object for this type of YubiKey. """
-        return YubiKeyConfigUSBHID(ykver=self.version_num(), \
-                                       capabilities = self.capabilities, \
-                                       **kw)
-
-    def write_config(self, cfg, slot=1):
-        """ Write a configuration to the YubiKey. """
-        cfg_req_ver = cfg.version_required()
-        if cfg_req_ver > self.version_num():
-            raise yubikey.YubiKeyVersionError('Configuration requires YubiKey version %i.%i (this is %s)' % \
-                                                  (cfg_req_ver[0], cfg_req_ver[1], self.version()))
-        if not self.capabilities.have_configuration_slot(slot):
-            raise YubiKeyUSBHIDError("Can't write configuration to slot %i" % (slot))
-        return self._write_config(cfg, slot)
-
-    def _read_serial(self, may_block):
-        """ Read the serial number from a YubiKey > 2.2. """
-
-        frame = yubikey_frame.YubiKeyFrame(command = _SLOT_DEVICE_SERIAL)
-        self._write(frame)
-        response = self._read_response(may_block=may_block)
-        if not yubico_util.validate_crc16(response[:6]):
-            raise YubiKeyUSBHIDError("Read from device failed CRC check")
-        # the serial number is big-endian, although everything else is little-endian
-        serial = struct.unpack('>lxxx', response)
-        return serial[0]
-
-    def _challenge_response(self, challenge, mode, slot, variable, may_block):
-        """ Do challenge-response with a YubiKey > 2.0. """
-         # Check length and pad challenge if appropriate
-        if mode == 'HMAC':
-            if len(challenge) > yubikey_defs.SHA1_MAX_BLOCK_SIZE:
-                raise yubico_exception.InputError('Mode HMAC challenge too big (%i/%i)' \
-                                                      % (yubikey_defs.SHA1_MAX_BLOCK_SIZE, len(challenge)))
-            if len(challenge) < yubikey_defs.SHA1_MAX_BLOCK_SIZE:
-                pad_with = chr(0x0)
-                if variable and challenge[-1] == pad_with:
-                    pad_with = chr(0xff)
-                challenge = challenge.ljust(yubikey_defs.SHA1_MAX_BLOCK_SIZE, pad_with)
-            response_len = yubikey_defs.SHA1_DIGEST_SIZE
-        elif mode == 'OTP':
-            if len(challenge) != yubikey_defs.UID_SIZE:
-                raise yubico_exception.InputError('Mode OTP challenge must be %i bytes (got %i)' \
-                                                      % (yubikey_defs.UID_SIZE, len(challenge)))
-            challenge = challenge.ljust(yubikey_defs.SHA1_MAX_BLOCK_SIZE, chr(0x0))
-            response_len = 16
-        else:
-            raise yubico_exception.InputError('Invalid mode supplied (%s, valid values are HMAC and OTP)' \
-                                                  % (mode))
-
+    def __del__(self):
         try:
-            command = _CMD_CHALLENGE[mode][slot]
-        except:
-            raise yubico_exception.InputError('Invalid slot specified (%s)' % (slot))
-
-        frame = yubikey_frame.YubiKeyFrame(command=command, payload=challenge)
-        self._write(frame)
-        response = self._read_response(may_block=may_block)
-        if not yubico_util.validate_crc16(response[:response_len + 2]):
-            raise YubiKeyUSBHIDError("Read from device failed CRC check")
-        return response[:response_len]
+            if self._usb_handle:
+                self._close()
+        except IOError:
+            pass
 
     def _write_config(self, cfg, slot):
         """ Write configuration to YubiKey. """
@@ -286,9 +150,15 @@ class YubiKeyUSBHID(YubiKey):
         # make sure we have a fresh pgm_seq value
         self.status()
         self._debug("Programmed slot %i, sequence %i -> %i\n" % (slot, old_pgm_seq, self._status.pgm_seq))
-        if self._status.pgm_seq != old_pgm_seq + 1:
-            raise YubiKeyUSBHIDError('YubiKey programming failed (seq %i not increased (%i))' % \
-                                         (old_pgm_seq, self._status.pgm_seq))
+
+        if slot in [SLOT.CONFIG, SLOT.CONFIG2] or old_pgm_seq != 0:
+            if self._status.pgm_seq == old_pgm_seq + 1:
+                return
+        elif self._status.pgm_seq == 1:
+            return
+
+        raise YubiKeyUSBHIDError('YubiKey programming failed (seq %i not increased (%i))' % \
+                                    (old_pgm_seq, self._status.pgm_seq))
 
     def _read_response(self, may_block=False):
         """ Wait for a response to become available, and read it. """
@@ -297,7 +167,7 @@ class YubiKeyUSBHID(YubiKey):
         # continue reading while response pending is set
         while True:
             this = self._read()
-            flags = ord(this[7])
+            flags = yubico_util.ord_byte(this[7])
             if flags & yubikey_defs.RESP_PENDING_FLAG:
                 seq = flags & 0b00011111
                 if res and (seq == 0):
@@ -321,7 +191,7 @@ class YubiKeyUSBHID(YubiKey):
             self._debug("Failed reading %i bytes (got %i) from USB HID YubiKey.\n"
                         % (_FEATURE_RPT_SIZE, recv))
             raise YubiKeyUSBHIDError('Failed reading from USB HID YubiKey')
-        data = ''.join(chr(c) for c in recv)
+        data = b''.join(yubico_util.chr_byte(c) for c in recv)
         self._debug("READ  : %s" % (yubico_util.hexdump(data, colorize=True)))
         return data
 
@@ -344,7 +214,7 @@ class YubiKeyUSBHID(YubiKey):
         """
         Reset read mode by issuing a dummy write.
         """
-        data = '\x00\x00\x00\x00\x00\x00\x00\x8f'
+        data = b'\x00\x00\x00\x00\x00\x00\x00\x8f'
         self._raw_write(data)
         self._waitfor_clear(yubikey_defs.SLOT_WRITE_FLAG)
         return True
@@ -400,8 +270,9 @@ class YubiKeyUSBHID(YubiKey):
         wait_num = (timeout * 2) - 1 + 6
         resp_timeout = False    # YubiKey hasn't indicated RESP_TIMEOUT (yet)
         while not finished:
+            time.sleep(sleep)
             this = self._read()
-            flags = ord(this[7])
+            flags = yubico_util.ord_byte(this[7])
 
             if flags & yubikey_defs.RESP_TIMEOUT_WAIT_FLAG:
                 if not resp_timeout:
@@ -436,8 +307,7 @@ class YubiKeyUSBHID(YubiKey):
                         reason = 'Timed out waiting for YubiKey to clear status 0x%x' % mask
                     else:
                         reason = 'Timed out waiting for YubiKey to set status 0x%x' % mask
-                    raise yubikey.YubiKeyTimeout(reason)
-                time.sleep(sleep)
+                    raise yubikey_base.YubiKeyTimeout(reason)
                 sleep = min(sleep + sleep, 0.5)
             else:
                 return this
@@ -455,7 +325,7 @@ class YubiKeyUSBHID(YubiKey):
         try:
             self._usb_handle = usb_device.open()
             self._usb_handle.detachKernelDriver(0)
-        except Exception, error:
+        except Exception as error:
             if 'could not detach kernel driver from interface' in str(error):
                 self._debug('The in-kernel-HID driver has already been detached\n')
             else:
@@ -494,14 +364,14 @@ class YubiKeyUSBHID(YubiKey):
             import usb.core
             import usb.legacy
             devices = [usb.legacy.Device(d) for d in usb.core.find(
-                find_all=True, idVendor=_YUBICO_VID)]
+                find_all=True, idVendor=YUBICO_VID)]
         except ImportError:
             # Using PyUsb < 1.0.
             import usb
             devices = [d for bus in usb.busses() for d in bus.devices]
         for device in devices:
-            if device.idVendor == _YUBICO_VID:
-                if device.idProduct in _YK_PIDS:
+            if device.idVendor == YUBICO_VID:
+                if device.idProduct in PID.all(otp=True):
                     if skip == 0:
                         return device
                     skip -= 1
@@ -514,10 +384,147 @@ class YubiKeyUSBHID(YubiKey):
                 pre = self.__class__.__name__
                 if hasattr(self, 'debug_prefix'):
                     pre = getattr(self, 'debug_prefix')
-                sys.stderr.write("%s: " % (self.__class__.__name__))
+                sys.stderr.write("%s: " % pre)
             sys.stderr.write(out)
 
-class YubiKeyUSBHIDStatus():
+
+class YubiKeyUSBHID(YubiKey):
+    """
+    Class for accessing a YubiKey over USB HID.
+
+    This class is for communicating specifically with standard YubiKeys
+    (USB vendor id = 0x1050, product id = 0x10) using USB HID.
+
+    There is another class for the YubiKey NEO BETA, even though that
+    product also goes by product id 0x10 for the BETA versions. The
+    expectation is that the final YubiKey NEO will have it's own product id.
+
+    Tested with YubiKey versions 1.3 and 2.2.
+    """
+
+    model = 'YubiKey'
+    description = 'YubiKey (or YubiKey NANO)'
+    _capabilities_cls = YubiKeyUSBHIDCapabilities
+
+    def __init__(self, debug=False, skip=0, hid_device=None):
+        """
+        Find and connect to a YubiKey (USB HID).
+
+        Attributes :
+            skip  -- number of YubiKeys to skip
+            debug -- True or False
+        """
+        super(YubiKeyUSBHID, self).__init__(debug)
+        if hid_device is None:
+            self._device = YubiKeyHIDDevice(debug, skip)
+        else:
+            self._device = hid_device
+        self.capabilities = \
+            self._capabilities_cls(model=self.model,
+                                   version=self.version_num(),
+                                   default_answer=False)
+
+    def __repr__(self):
+        return '<%s instance at %s: YubiKey version %s>' % (
+            self.__class__.__name__,
+            hex(id(self)),
+            self.version()
+            )
+
+    def __str__(self):
+        return '%s (%s)' % (self.model, self.version())
+
+    def status(self):
+        """
+        Poll YubiKey for status.
+        """
+        return self._device.status()
+
+    def version_num(self):
+        """ Get the YubiKey version as a tuple (major, minor, build). """
+        return self._device._status.ykver()
+
+    def version(self):
+        """ Get the YubiKey version. """
+        return self._device._status.version()
+
+    def serial(self, may_block=True):
+        """ Get the YubiKey serial number (requires YubiKey 2.2). """
+        if not self.capabilities.have_serial_number():
+            raise yubikey_base.YubiKeyVersionError("Serial number unsupported in YubiKey %s" % self.version() )
+        return self._read_serial(may_block)
+
+    def challenge_response(self, challenge, mode='HMAC', slot=1, variable=True, may_block=True):
+        """ Issue a challenge to the YubiKey and return the response (requires YubiKey 2.2). """
+        if not self.capabilities.have_challenge_response(mode):
+            raise yubikey_base.YubiKeyVersionError("%s challenge-response unsupported in YubiKey %s" % (mode, self.version()) )
+        return self._challenge_response(challenge, mode, slot, variable, may_block)
+
+    def init_config(self, **kw):
+        """ Get a configuration object for this type of YubiKey. """
+        return YubiKeyConfigUSBHID(ykver=self.version_num(), \
+                                       capabilities = self.capabilities, \
+                                       **kw)
+
+    def write_config(self, cfg, slot=1):
+        """ Write a configuration to the YubiKey. """
+        cfg_req_ver = cfg.version_required()
+        if cfg_req_ver > self.version_num():
+            raise yubikey_base.YubiKeyVersionError('Configuration requires YubiKey version %i.%i (this is %s)' % \
+                                                  (cfg_req_ver[0], cfg_req_ver[1], self.version()))
+        if not self.capabilities.have_configuration_slot(slot):
+            raise YubiKeyUSBHIDError("Can't write configuration to slot %i" % (slot))
+        return self._device._write_config(cfg, slot)
+
+    def _read_serial(self, may_block):
+        """ Read the serial number from a YubiKey > 2.2. """
+
+        frame = yubikey_frame.YubiKeyFrame(command = SLOT.DEVICE_SERIAL)
+        self._device._write(frame)
+        response = self._device._read_response(may_block=may_block)
+        if not yubico_util.validate_crc16(response[:6]):
+            raise YubiKeyUSBHIDError("Read from device failed CRC check")
+        # the serial number is big-endian, although everything else is little-endian
+        serial = struct.unpack('>lxxx', response)
+        return serial[0]
+
+    def _challenge_response(self, challenge, mode, slot, variable, may_block):
+        """ Do challenge-response with a YubiKey > 2.0. """
+         # Check length and pad challenge if appropriate
+        if mode == 'HMAC':
+            if len(challenge) > yubikey_defs.SHA1_MAX_BLOCK_SIZE:
+                raise yubico_exception.InputError('Mode HMAC challenge too big (%i/%i)' \
+                                                      % (yubikey_defs.SHA1_MAX_BLOCK_SIZE, len(challenge)))
+            if len(challenge) < yubikey_defs.SHA1_MAX_BLOCK_SIZE:
+                pad_with = b'\0'
+                if variable and challenge[-1:] == pad_with:
+                    pad_with = b'\xff'
+                challenge = challenge.ljust(yubikey_defs.SHA1_MAX_BLOCK_SIZE, pad_with)
+            response_len = yubikey_defs.SHA1_DIGEST_SIZE
+        elif mode == 'OTP':
+            if len(challenge) != yubikey_defs.UID_SIZE:
+                raise yubico_exception.InputError('Mode OTP challenge must be %i bytes (got %i)' \
+                                                      % (yubikey_defs.UID_SIZE, len(challenge)))
+            challenge = challenge.ljust(yubikey_defs.SHA1_MAX_BLOCK_SIZE, b'\0')
+            response_len = 16
+        else:
+            raise yubico_exception.InputError('Invalid mode supplied (%s, valid values are HMAC and OTP)' \
+                                                  % (mode))
+
+        try:
+            command = _CMD_CHALLENGE[mode][slot]
+        except:
+            raise yubico_exception.InputError('Invalid slot specified (%s)' % (slot))
+
+        frame = yubikey_frame.YubiKeyFrame(command=command, payload=challenge)
+        self._device._write(frame)
+        response = self._device._read_response(may_block=may_block)
+        if not yubico_util.validate_crc16(response[:response_len + 2]):
+            raise YubiKeyUSBHIDError("Read from device failed CRC check")
+        return response[:response_len]
+
+
+class YubiKeyUSBHIDStatus(object):
     """ Class to represent the status information we get from the YubiKey. """
 
     CONFIG1_VALID = 0x01 # Bit in touchLevel indicating that configuration 1 is valid (from firmware 2.1)
@@ -579,10 +586,10 @@ class YubiKeyUSBHIDStatus():
             res.append(2)
         return res
 
+
 class YubiKeyConfigUSBHID(yubikey_config.YubiKeyConfig):
     """
     Configuration class for USB HID YubiKeys.
     """
     def __init__(self, ykver, capabilities = None, **kw):
-        yubikey_config.YubiKeyConfig.__init__(self, ykver = ykver, capabilities = capabilities, **kw)
-        return None
+        super(YubiKeyConfigUSBHID, self).__init__(ykver=ykver, capabilities=capabilities, **kw)

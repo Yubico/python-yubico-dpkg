@@ -15,17 +15,38 @@ __all__ = [
     'YubiKeyConfig',
 ]
 
-from yubico import __version__
+from .yubico_version import __version__
 
+import sys
 import struct
 import binascii
-import yubico_util
-import yubikey_defs
-import yubikey_frame
-import yubico_exception
-import yubikey_config_util
-from yubikey_config_util import YubiKeyConfigBits, YubiKeyConfigFlag, YubiKeyExtendedFlag, YubiKeyTicketFlag
-import yubikey
+from . import yubico_util
+from . import yubikey_defs
+from . import yubikey_frame
+from . import yubico_exception
+from . import yubikey_base
+from .yubikey_config_util import YubiKeyConfigBits, YubiKeyConfigFlag, YubiKeyExtendedFlag, YubiKeyTicketFlag
+from .yubikey_defs import SLOT
+
+
+def command2str(num):
+    """ Turn command number into name """
+    for attr in SLOT.__dict__.keys():
+        if not attr.startswith('_') and attr == attr.upper():
+            if getattr(SLOT, attr) == num:
+                return 'SLOT_%s' % attr
+
+    return "0x%02x" % (num)
+
+### BEGIN DEPRECATED
+### These are here for backwards compatibility, DO NOT USE!
+SLOT_CONFIG  = SLOT.CONFIG
+SLOT_CONFIG2 = SLOT.CONFIG2
+SLOT_UPDATE1 = SLOT.UPDATE1
+SLOT_UPDATE2 = SLOT.UPDATE2
+SLOT_SWAP    = SLOT.SWAP
+### END DEPRECATED
+
 
 TicketFlags = [
     YubiKeyTicketFlag('TAB_FIRST',		0x01, min_ykver=(1, 0), doc='Send TAB before first part'),
@@ -79,34 +100,19 @@ ExtendedFlags = [
     YubiKeyExtendedFlag('DORMANT',		0x40, min_ykver=(2, 3), doc='Dormant configuration (can be woken up and flag removed = requires update flag)'),
     ]
 
-SLOT_CONFIG			= 0x01	# First (default / V1) configuration
-SLOT_CONFIG2			= 0x03	# Second (V2) configuration
-SLOT_UPDATE1			= 0x04	# Update slot 1
-SLOT_UPDATE2			= 0x05	# Update slot 2
-SLOT_SWAP			= 0x06	# Swap slot 1 and 2
-
-def command2str(num):
-    """ Turn command number into name """
-    known = {0x01: "SLOT_CONFIG",
-             0x03: "SLOT_CONFIG2",
-             0x04: "SLOT_UPDATE1",
-             0x05: "SLOT_UPDATE2",
-             0x06: "SLOT_SWAP",
-             }
-    if num in known:
-        return known[num]
-    return "0x%02x" % (num)
 
 class YubiKeyConfigError(yubico_exception.YubicoError):
     """
     Exception raised for YubiKey configuration errors.
     """
 
-class YubiKeyConfig():
+
+class YubiKeyConfig(object):
     """
     Base class for configuration of all current types of YubiKeys.
     """
-    def __init__(self, ykver=None, capabilities=None, update=False, swap=False):
+    def __init__(self, ykver=None, capabilities=None, update=False, swap=False,
+                 zap=False):
         """
         `ykver' is a tuple (major, minor) with the version number of the key
         you are planning to apply this configuration to. Not mandated, but
@@ -122,9 +128,12 @@ class YubiKeyConfig():
 
         YubiKey >= 2.3 also supports swapping the configurations, making
         slot 1 be slot 2 and vice versa. Set swap=True for this.
+
+        YubiKeys support deleting a configuration, setting it in an
+        unprogrammed state. Set zap=True for this.
         """
         if capabilities is None:
-            self.capabilities = yubikey.YubiKeyCapabilities(default_answer = True)
+            self.capabilities = yubikey_base.YubiKeyCapabilities(default_answer = True)
         else:
             self.capabilities = capabilities
 
@@ -132,26 +141,27 @@ class YubiKeyConfig():
         self.yk_req_version = (0, 0)
         self.ykver = ykver
 
-        self.fixed = ''
-        self.uid = ''
-        self.key = ''
-        self.access_code = ''
+        self.fixed = b''
+        self.uid = b''
+        self.key = b''
+        self.access_code = b''
 
         self.ticket_flags = YubiKeyConfigBits(0x0)
         self.config_flags = YubiKeyConfigBits(0x0)
         self.extended_flags = YubiKeyConfigBits(0x0)
 
-        self.unlock_code = ''
+        self.unlock_code = b''
         self._mode = ''
         if update or swap:
             self._require_version(major=2, minor=3)
         self._update_config = update
         self._swap_slots = swap
+        self._zap = zap
 
         return None
 
     def __repr__(self):
-        return '<%s instance at %s: mode %s, v=%s/%s, lf=%i, lu=%i, lk=%i, lac=%i, tf=%x, cf=%x, ef=%x, lu=%i, up=%s, sw=%s>' % (
+        return '<%s instance at %s: mode %s, v=%s/%s, lf=%i, lu=%i, lk=%i, lac=%i, tf=%x, cf=%x, ef=%x, lu=%i, up=%s, sw=%s, z=%s>' % (
             self.__class__.__name__,
             hex(id(self)),
             self._mode,
@@ -166,6 +176,7 @@ class YubiKeyConfig():
             len(self.unlock_code),
             self._update_config,
             self._swap_slots,
+            self._zap
             )
 
     def version_required(self):
@@ -247,10 +258,10 @@ class YubiKeyConfig():
         """
         Access code to allow re-programming of your YubiKey.
 
-        Supply data as either a raw string, or a hexlified string prefixed by 'h:'.
+        Supply data as either a raw bytestring, or a hexlified bytestring prefixed by 'h:'.
         The result, after any hex decoding, must be 6 bytes.
         """
-        if data.startswith('h:'):
+        if data.startswith(b'h:'):
             new = binascii.unhexlify(data[2:])
         else:
             new = data
@@ -270,7 +281,7 @@ class YubiKeyConfig():
         Supply data as either a raw string, or a hexlified string prefixed by 'h:'.
         The result, after any hex decoding, must be 6 bytes.
         """
-        if data.startswith('h:'):
+        if data.startswith(b'h:'):
             new = binascii.unhexlify(data[2:])
         else:
             new = data
@@ -284,9 +295,9 @@ class YubiKeyConfig():
         Set the YubiKey up for standard OTP validation.
         """
         if not self.capabilities.have_yubico_OTP():
-            raise yubikey.YubiKeyVersionError('Yubico OTP not available in %s version %d.%d' \
-                                                  % (self.capabilities.model, self.ykver[0], self.ykver[1]))
-        if private_uid.startswith('h:'):
+            raise yubikey_base.YubiKeyVersionError('Yubico OTP not available in %s version %d.%d' \
+                                                   % (self.capabilities.model, self.ykver[0], self.ykver[1]))
+        if private_uid.startswith(b'h:'):
             private_uid = binascii.unhexlify(private_uid[2:])
         if len(private_uid) != yubikey_defs.UID_SIZE:
             raise yubico_exception.InputError('Private UID must be %i bytes' % (yubikey_defs.UID_SIZE))
@@ -302,8 +313,8 @@ class YubiKeyConfig():
         Requires YubiKey 2.1.
         """
         if not self.capabilities.have_OATH('HOTP'):
-            raise yubikey.YubiKeyVersionError('OATH HOTP not available in %s version %d.%d' \
-                                                  % (self.capabilities.model, self.ykver[0], self.ykver[1]))
+            raise yubikey_base.YubiKeyVersionError('OATH HOTP not available in %s version %d.%d' \
+                                                   % (self.capabilities.model, self.ykver[0], self.ykver[1]))
         if digits != 6 and digits != 8:
             raise yubico_exception.InputError('OATH-HOTP digits must be 6 or 8')
 
@@ -313,7 +324,7 @@ class YubiKeyConfig():
             self.config_flag('OATH_HOTP8', True)
         if omp or tt or mui:
             decoded_mui = self._decode_input_string(mui)
-            fixed = chr(omp) + chr(tt) + decoded_mui
+            fixed = yubico_util.chr_byte(omp) + yubico_util.chr_byte(tt) + decoded_mui
             self.fixed_string(fixed)
         if factor_seed:
             self.uid = self.uid + struct.pack('<H', factor_seed)
@@ -334,9 +345,9 @@ class YubiKeyConfig():
         if not type.upper() in ['HMAC', 'OTP']:
             raise yubico_exception.InputError('Invalid \'type\' (%s)' % type)
         if not self.capabilities.have_challenge_response(type.upper()):
-            raise yubikey.YubiKeyVersionError('%s Challenge-Response not available in %s version %d.%d' \
-                                                  % (type.upper(), self.capabilities.model, \
-                                                         self.ykver[0], self.ykver[1]))
+            raise yubikey_base.YubiKeyVersionError('%s Challenge-Response not available in %s version %d.%d' \
+                                                   % (type.upper(), self.capabilities.model, \
+                                                          self.ykver[0], self.ykver[1]))
         self._change_mode('CHAL_RESP', major=2, minor=2)
         if type.upper() == 'HMAC':
             self.config_flag('CHAL_HMAC', True)
@@ -358,8 +369,8 @@ class YubiKeyConfig():
         flag = _get_flag(which, TicketFlags)
         if flag:
             if not self.capabilities.have_ticket_flag(flag):
-                raise yubikey.YubiKeyVersionError('Ticket flag %s requires %s, and this is %s %d.%d'
-                                                  % (which, flag.req_string(self.capabilities.model), \
+                raise yubikey_base.YubiKeyVersionError('Ticket flag %s requires %s, and this is %s %d.%d'
+                                                       % (which, flag.req_string(self.capabilities.model), \
                                                          self.capabilities.model, self.ykver[0], self.ykver[1]))
             req_major, req_minor = flag.req_version()
             self._require_version(major=req_major, minor=req_minor)
@@ -381,8 +392,8 @@ class YubiKeyConfig():
         flag = _get_flag(which, ConfigFlags)
         if flag:
             if not self.capabilities.have_config_flag(flag):
-                raise yubikey.YubiKeyVersionError('Config flag %s requires %s, and this is %s %d.%d'
-                                                  % (which, flag.req_string(self.capabilities.model), \
+                raise yubikey_base.YubiKeyVersionError('Config flag %s requires %s, and this is %s %d.%d'
+                                                       % (which, flag.req_string(self.capabilities.model), \
                                                          self.capabilities.model, self.ykver[0], self.ykver[1]))
             req_major, req_minor = flag.req_version()
             self._require_version(major=req_major, minor=req_minor)
@@ -404,8 +415,8 @@ class YubiKeyConfig():
         flag = _get_flag(which, ExtendedFlags)
         if flag:
             if not self.capabilities.have_extended_flag(flag):
-                raise yubikey.YubiKeyVersionError('Extended flag %s requires %s, and this is %s %d.%d'
-                                                  % (which, flag.req_string(self.capabilities.model), \
+                raise yubikey_base.YubiKeyVersionError('Extended flag %s requires %s, and this is %s %d.%d'
+                                                       % (which, flag.req_string(self.capabilities.model), \
                                                          self.capabilities.model, self.ykver[0], self.ykver[1]))
             req_major, req_minor = flag.req_version()
             self._require_version(major=req_major, minor=req_minor)
@@ -419,7 +430,7 @@ class YubiKeyConfig():
 
     def to_string(self):
         """
-        Return the current configuration as a string (always 64 bytes).
+        Return the current configuration as a bytestring (always 64 bytes).
         """
         #define UID_SIZE		6	/* Size of secret ID field */
         #define FIXED_SIZE              16      /* Max size of fixed field */
@@ -463,22 +474,25 @@ class YubiKeyConfig():
         Return the current configuration as a YubiKeyFrame object.
         """
         data = self.to_string()
-        payload = data.ljust(64, chr(0x0))
+        payload = data.ljust(64, yubico_util.chr_byte(0x0))
         if slot is 1:
             if self._update_config:
-                command = SLOT_UPDATE1
+                command = SLOT.UPDATE1
             else:
-                command = SLOT_CONFIG
+                command = SLOT.CONFIG
         elif slot is 2:
             if self._update_config:
-                command = SLOT_UPDATE2
+                command = SLOT.UPDATE2
             else:
-                command = SLOT_CONFIG2
+                command = SLOT.CONFIG2
         else:
             assert()
 
         if self._swap_slots:
-            command = SLOT_SWAP
+            command = SLOT.SWAP
+
+        if self._zap:
+            payload = b''
 
         return yubikey_frame.YubiKeyFrame(command=command, payload=payload)
 
@@ -486,15 +500,17 @@ class YubiKeyConfig():
         """ Update the minimum version of YubiKey this configuration can be applied to. """
         new_ver = (major, minor)
         if self.ykver and new_ver > self.ykver:
-            raise yubikey.YubiKeyVersionError('Configuration requires YubiKey %d.%d, and this is %d.%d'
+            raise yubikey_base.YubiKeyVersionError('Configuration requires YubiKey %d.%d, and this is %d.%d'
                                               % (major, minor, self.ykver[0], self.ykver[1]))
         if new_ver > self.yk_req_version:
             self.yk_req_version = new_ver
 
     def _decode_input_string(self, data):
-        if data.startswith('m:'):
-            data = 'h:' + yubico_util.modhex_decode(data[2:])
-        if data.startswith('h:'):
+        if sys.version_info >= (3, 0) and isinstance(data, str):
+            data = data.encode('ascii')
+        if data.startswith(b'm:'):
+            data = b'h:' + yubico_util.modhex_decode(data[2:])
+        if data.startswith(b'h:'):
             return(binascii.unhexlify(data[2:]))
         else:
             return(data)
@@ -517,10 +533,10 @@ class YubiKeyConfig():
         """
         Set a 20 bytes key. This is used in CHAL_HMAC and OATH_HOTP mode.
 
-        Supply data as either a raw string, or a hexlified string prefixed by 'h:'.
+        Supply data as either a raw bytestring, or a hexlified bytestring prefixed by 'h:'.
         The result, after any hex decoding, must be 20 bytes.
         """
-        if data.startswith('h:'):
+        if data.startswith(b'h:'):
             new = binascii.unhexlify(data[2:])
         else:
             new = data
@@ -529,6 +545,7 @@ class YubiKeyConfig():
             self.uid = new[16:]
         else:
             raise yubico_exception.InputError('HMAC key must be exactly 20 bytes')
+
 
 def _get_flag(which, flags):
     """ Find 'which' entry in 'flags'. """
