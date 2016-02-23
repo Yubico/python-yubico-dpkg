@@ -1,3 +1,32 @@
+2016-02-23  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, release.py, yubico/yubico_version.py: Bumped version and
+	updated NEWS for release.
+
+2015-11-03  Klas Lindfors <klas@yubico.com>
+
+	* yubico/yubikey_usb_hid.py: change logic for pgm seq if no config is valid, seq 0 is ok
+
+2015-11-03  Klas Lindfors <klas@yubico.com>
+
+	* yubico/yubikey_usb_hid.py: that the new sequence is 0 is also ok
+
+2015-10-07  Dain Nilsson <dain@yubico.com>
+
+	* yubico/yubikey_frame.py: Added comments explaining debug data.
+
+2015-10-07  Dain Nilsson <dainzor@gmail.com>
+
+	* : Merge pull request #31 from axhoffmann/master Solved: Unlock code couldn't be set
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* MANIFEST.in: Include tests.
+
+2015-10-01  Dain Nilsson <dain@yubico.com>
+
+	* NEWS, yubico/yubico_version.py: Bumped version post release.
+
 2015-10-01  Dain Nilsson <dain@yubico.com>
 
 	* NEWS, yubico/yubico_version.py: Update version and NEWS for

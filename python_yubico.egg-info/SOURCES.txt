@@ -19,7 +19,12 @@ python_yubico.egg-info/dependency_links.txt
 python_yubico.egg-info/requires.txt
 python_yubico.egg-info/top_level.txt
 test/__init__.py
-test/__init__.pyc
+test/soft/__init__.py
+test/soft/test_yubico.py
+test/soft/test_yubikey_config.py
+test/soft/test_yubikey_frame.py
+test/usb/__init__.py
+test/usb/test_yubikey_usb_hid.py
 util/yubikey-totp
 util/yubikey-totp.1
 yubico/__init__.py
