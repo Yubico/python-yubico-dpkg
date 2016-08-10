@@ -3,7 +3,11 @@ python-yubico (1.3.2-1) unstable; urgency=medium
   [ Dain  Nilsson ]
   * New upstream version,
 
- -- Dain Nilsson <dain@yubico.com>  Tue, 23 Feb 2016 12:39:07 +0100
+  [ Simon Josefsson ]
+  * Use https URLs in Vcs-Git.
+  * Update Standards-Version from 3.9.6 to 3.9.8.
+
+ -- Simon Josefsson <simon@josefsson.org>  Wed, 10 Aug 2016 15:39:41 +0200
 
 python-yubico (1.3.1-1) unstable; urgency=medium
 
