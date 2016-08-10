@@ -1,11 +1,13 @@
 python-yubico (1.3.2-1) unstable; urgency=medium
 
-  [ Dain  Nilsson ]
+  [ Dain Nilsson ]
   * New upstream version,
 
   [ Simon Josefsson ]
   * Use https URLs in Vcs-Git.
   * Update Standards-Version from 3.9.6 to 3.9.8.
+  * Move python-yubico-tools from 'python' section to 'utils'.
+  * Package description fixes.
 
  -- Simon Josefsson <simon@josefsson.org>  Wed, 10 Aug 2016 15:39:41 +0200
 
